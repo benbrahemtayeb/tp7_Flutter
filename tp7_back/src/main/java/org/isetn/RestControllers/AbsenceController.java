@@ -28,7 +28,6 @@ public class AbsenceController {
         return absenceRepository.findByEtudiantId(id);
     }
 
-    // Total des heures d'absence par matière pour un étudiant : [{codMat, total}, ...]
     @GetMapping("/etudiant/{id}/totals")
     public List<Map<String, Object>> totals(@PathVariable Integer id) {
         Map<String, Double> sums = new TreeMap<>();
@@ -47,11 +46,44 @@ public class AbsenceController {
         return result;
     }
 
+    @GetMapping("/top3-matieres")
+    public List<Map<String, Object>> getTop3AbsencesMatieres() {
+        Map<String, Object[]> map = new LinkedHashMap<>(); // codMat -> [intMat, totalNha]
+        List<Absence> absences = absenceRepository.findAll();
+        for (Absence a : absences) {
+            if (a.getMatiere() == null) continue;
+            String cod = a.getMatiere().getCodMat();
+            String intMat = a.getMatiere().getIntMat() != null ? a.getMatiere().getIntMat() : cod;
+            double nha = a.getNha() == null ? 0.0 : a.getNha();
+
+            map.compute(cod, (k, v) -> {
+                if (v == null) {
+                    return new Object[]{intMat, nha};
+                } else {
+                    v[1] = (Double) v[1] + nha;
+                    return v;
+                }
+            });
+        }
+
+        return map.entrySet().stream()
+                .map(e -> {
+                    Map<String, Object> m = new LinkedHashMap<>();
+                    m.put("codMat", e.getKey());
+                    m.put("intMat", e.getValue()[0]);
+                    m.put("totalNha", e.getValue()[1]);
+                    return m;
+                })
+                .sorted((a, b) -> Double.compare((Double) b.get("totalNha"), (Double) a.get("totalNha")))
+                .limit(3)
+                .toList();
+    }
+
     @PostMapping
     public org.springframework.http.ResponseEntity<?> add(@RequestBody Absence a) {
         if (a.getNha() == null || a.getNha() <= 0 || a.getNha() > 3.0) {
             return org.springframework.http.ResponseEntity.badRequest()
-                    .body("Le nombre d'heures d'absence doit être compris entre 0.5h et 3h max (1.5h max pour un cours, 3h max pour un TP).");
+                    .body("Le nombre d'heures d'absence doit être compris entre 0.5h et 3h max.");
         }
         return org.springframework.http.ResponseEntity.ok(absenceRepository.save(a));
     }
@@ -60,7 +92,7 @@ public class AbsenceController {
     public org.springframework.http.ResponseEntity<?> update(@PathVariable Integer id, @RequestBody Absence a) {
         if (a.getNha() == null || a.getNha() <= 0 || a.getNha() > 3.0) {
             return org.springframework.http.ResponseEntity.badRequest()
-                    .body("Le nombre d'heures d'absence doit être compris entre 0.5h et 3h max (1.5h max pour un cours, 3h max pour un TP).");
+                    .body("Le nombre d'heures d'absence doit être compris entre 0.5h et 3h max.");
         }
         a.setId(id);
         return org.springframework.http.ResponseEntity.ok(absenceRepository.save(a));

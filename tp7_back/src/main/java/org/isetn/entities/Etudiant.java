@@ -22,6 +22,7 @@ public class Etudiant {
     private String nom;
     private String prenom;
     private LocalDate dateNais;
+    private String lieuNais;
 
     @ManyToOne
     private Classe classe;

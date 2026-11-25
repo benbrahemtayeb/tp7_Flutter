@@ -5,6 +5,8 @@ import 'classes_screen.dart';
 import 'etudiants_screen.dart';
 import 'formations_screen.dart';
 import 'login.dart';
+import 'moyennes_screen.dart';
+import 'top_absences_screen.dart';
 
 class Dashboard extends StatelessWidget {
   const Dashboard({super.key});
@@ -30,48 +32,44 @@ class Dashboard extends StatelessWidget {
               color: Colors.purple,
               padding: const EdgeInsets.fromLTRB(16, 60, 16, 20),
               child: const Text(
-                "Exercise for groups :\nDSI33 and DSI31",
-                style: TextStyle(color: Colors.white, fontSize: 16),
+                "Etudiant Manager",
+                style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
               ),
             ),
             ListTile(
-              leading: const Icon(Icons.groups, color: Colors.deepOrange),
-              title: const Text("Manage groups"),
-              onTap: () => _go(context, const ClassesScreen()),
+
+              title: const Text("1- Moyennes des étudiants"),
+              onTap: () => _go(context, const MoyennesScreen()),
             ),
             ListTile(
-              leading: const Icon(Icons.school, color: Colors.deepOrange),
-              title: const Text("Manage students"),
-              onTap: () => _go(context, const EtudiantsScreen()),
-            ),
-            ListTile(
-              leading: const Icon(Icons.menu_book, color: Colors.deepOrange),
-              title: const Text("Manage formations"),
-              onTap: () => _go(context, const FormationsScreen()),
-            ),
-            ListTile(
-              leading: const Icon(Icons.event_busy, color: Colors.deepOrange),
-              title: const Text("Manage absences"),
-              onTap: () => _go(context, const AbsencesScreen()),
-            ),
-            ListTile(
-              leading: const Icon(Icons.person, color: Colors.deepOrange),
-              title: const Text("Manage teachers"),
-              onTap: () {
-                Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Not implemented yet')),
-                );
-              },
+
+              title: const Text("2- Top 3 Modules Absents"),
+              onTap: () => _go(context, const TopAbsencesScreen()),
             ),
             const Divider(),
             ListTile(
-              leading: const Icon(Icons.logout, color: Colors.deepOrange),
-              title: const Text("Logout"),
+              leading: const Icon(Icons.groups, color: Colors.purple),
+              title: const Text("Gérer les classes"),
+              onTap: () => _go(context, const ClassesScreen()),
+            ),
+            ListTile(
+              leading: const Icon(Icons.school, color: Colors.purple),
+              title: const Text("Gérer les étudiants"),
+              onTap: () => _go(context, const EtudiantsScreen()),
+            ),
+            ListTile(
+              leading: const Icon(Icons.event_busy, color: Colors.purple),
+              title: const Text("Gérer les absences"),
+              onTap: () => _go(context, const AbsencesScreen()),
+            ),
+            const Divider(),
+            ListTile(
+              leading: const Icon(Icons.logout, color: Colors.red),
+              title: const Text("Déconnexion"),
               onTap: () => Navigator.pushAndRemoveUntil(
                 context,
                 MaterialPageRoute(builder: (_) => const Login()),
-                (route) => false,
+                    (route) => false,
               ),
             ),
           ],
